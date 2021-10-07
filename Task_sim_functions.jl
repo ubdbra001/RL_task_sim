@@ -55,6 +55,17 @@ function select_response(V::AbstractVector{<:Real})::Int
 	return(response)
 end
 
+function check_answer(correct_resp, actual_resp, N_options, fuzziness)
+	
+	if correct_resp == actual_resp && rand() < fuzziness
+		response_vec = zeros(N_options)
+		response_vec[correct_resp] = 1
+	else
+		response_vec = ones(N_options)
+		response_vec[actual_resp] = 0
+	end
+	return response_vec
+end
 
 
 function RW_learning(values::AbstractArray{<:Real}, responses::AbstractVector{<:Int},
