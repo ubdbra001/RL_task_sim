@@ -107,6 +107,17 @@ function update_correct(N_options::Int; prev_corr = nothing)::Int
 	return(correct_resp)
 end
 
+
+function dual_learning_rate(α_vals::Dict, δ)
+# Not sure how this works 
+    pos_learn = α_vals["pos"] .* (δ .> 0)
+    neg_learn = α_vals["neg"] .* (δ .<= 0)
+    
+    α = pos_learn + neg_learn
+        
+    return(α)
+end
+
 function RW_learning(values::AbstractArray{<:Real}, responses::AbstractVector{<:Int},
     α_vals::Dict, correct_resp::Int, cr_switch::Int, max_trials::Int, fuzziness::AbstractFloat)
 # Recursive reversal learning task takes in properties and produces a matrix of
