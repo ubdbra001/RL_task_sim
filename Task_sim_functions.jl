@@ -55,15 +55,33 @@ function select_response(V::AbstractVector{<:Real})::Int
 	return(response)
 end
 
-function check_answer(correct_resp, actual_resp, N_options, fuzziness)
-	
-	if correct_resp == actual_resp && rand() < fuzziness
+function generate_feedback(given_resp::Int, correct_resp::Int,
+    N_options::Int, fuzziness::AbstractFloat)
+# Generate feedback for response, feedback will depend on whether the response was
+# correct or not and user defined setting for how trustworthy the feedback should be
+# Inputs:
+#   correct_resp: Int indicating the current correct stimulus
+#   actual_resp: Int indicating the chosen stimulus
+#   N_options: Int indicating the number of potential options
+#   fuzziness: Float between 0 and 1 indicating how trustworthy the feedback
+#              should be. Nearer 1 makes the feedback more trustworthy,
+#              nearer 0 makes the feedback less trustworthy 
+
+    # To give a correct response the given and correct responses should match
+    # and a random number shuold be less than the fuziness threshold 
+	if correct_resp == given_resp && rand() < fuzziness
+        # Not sure why this is like this
 		response_vec = zeros(N_options)
 		response_vec[correct_resp] = 1
 	else
+    # Currently this will always accurately say if the response was incorrect,
+    # may need to update this
+
+        # As before not sure why I did it like this
 		response_vec = ones(N_options)
 		response_vec[actual_resp] = 0
 	end
+
 	return response_vec
 end
 
