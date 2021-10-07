@@ -1,4 +1,4 @@
-using ElasticArrays, Plots
+using ElasticArrays
 
 function softmax(V::AbstractVector{<:Real}; B = 1)
 # Converts Vector of values into softmaxed values
@@ -8,6 +8,7 @@ function softmax(V::AbstractVector{<:Real}; B = 1)
 #   B: Temp parameter (default = 1)
 # Output:
 #   V_softmax: Vector with softmaxed values of V
+
     V_softmax = exp.(B * V)/sum(exp.(B * V))
 	return(V_softmax)
 end
@@ -33,8 +34,25 @@ function findallmax(V::AbstractVector{<:Real})
 # Output:
 #   val_pos: Vector of positions
 #   val: Maximum value
+
 	val, _ = findmax(V)
 	val_pos = findall(V .== val)
 	
 	return val_pos, val
 end
+
+function select_response(V::AbstractVector{<:Real})::Int
+# Chooses response from options, if there is only one option
+# then that one is chosen, otherwise pick randomly from options
+# Inputs:
+#   V: Vector of response options
+# Outputs:
+#   Response: Chosen response option returned as Int
+
+    options = findallmax(V)
+	response = rand(options)
+	
+	return(response)
+end
+
+
