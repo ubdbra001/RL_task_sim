@@ -85,6 +85,27 @@ function generate_feedback(given_resp::Int, correct_resp::Int,
 	return response_vec
 end
 
+function update_correct(N_options::Int; prev_corr = nothing)::Int
+# Chooses a new correct response from the options available,
+# if previous correct response is provided then it is removed from
+# the potential options
+# Inputs:
+#   N_options: Integer specifying the number of potential options
+#   prev_corr: Integer specifying the previous correct option, which is
+#              removed from the pool of potential new correct options, by
+#              default it is nothing
+# Outputs:
+#   correct_resp: Int specifying the new correct response
+	
+	potential_responses = Vector(1:N_options)
+	
+	if !isnothing(prev_corr) && length(potential_responses) > 1
+		deleteat!(potential_responses, prev_corr)
+	end
+	
+	correct_resp = rand(potential_responses)
+	return(correct_resp)
+end
 
 function RW_learning(values::AbstractArray{<:Real}, responses::AbstractVector{<:Int},
     α_vals::Dict, correct_resp::Int, cr_switch::Int, max_trials::Int, fuzziness::AbstractFloat)
