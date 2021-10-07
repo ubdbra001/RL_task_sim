@@ -49,7 +49,7 @@ function select_response(V::AbstractVector{<:Real})::Int
 # Outputs:
 #   Response: Chosen response option returned as Int
 
-    options = findallmax(V)
+    options, = findallmax(V)
 	response = rand(options)
 	
 	return(response)
@@ -79,7 +79,7 @@ function generate_feedback(given_resp::Int, correct_resp::Int,
 
         # As before not sure why I did it like this
 		response_vec = ones(N_options)
-		response_vec[actual_resp] = 0
+		response_vec[given_resp] = 0
 	end
 
 	return response_vec
@@ -146,22 +146,22 @@ function RW_learning(values::AbstractArray{<:Real}, responses::AbstractVector{<:
 	N_trials = length(responses)
 	
     # Check whether that response is rewarded or not
-	Q_vec = check_answer(correct_resp, Q, length(V_curr), fuzziness)
+	Q_vec = generate_feedback(Q, correct_resp, length(V_curr), fuzziness)
 	
     # Calculate the delta
 	δ = (Q_vec - V_curr)
 
     # Adjust the reward values according to the delta
-	α = dualLearningRate(α_vals, δ)
+	α = dual_learning_rate(α_vals, δ)
 
     # Generate the stimuli values for the current trial and add that to the
     # values matrix  
 	V_new = V_curr .+ (α .* δ)
-	values[N_trials,:] = V_new
+	values[:,N_trials] = V_new
 	
     # If we've reached a switch point then choose a new correct response
 	if N_trials % cr_switch == 0
-		correct_resp = new_correct(length(V_curr); prev_corr = correct_resp)
+		correct_resp = update_correct(length(V_curr); prev_corr = correct_resp)
 	end
 	
     # If we've reached the max number of trials then break out of the function
