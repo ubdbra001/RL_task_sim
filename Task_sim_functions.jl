@@ -24,3 +24,17 @@ function softmax(R_in::Real; B = 1)
     V_softmax = softmax([R_in]; B)
     return(V_softmax)
 end
+
+function findallmax(V::AbstractVector{<:Real})
+# Find the positions of the maximum value in a vector
+# Returns all positions for joint max values
+# Input:
+#   V: Vector of Real values
+# Output:
+#   val_pos: Vector of positions
+#   val: Maximum value
+	val, _ = findmax(V)
+	val_pos = findall(V .== val)
+	
+	return val_pos, val
+end
