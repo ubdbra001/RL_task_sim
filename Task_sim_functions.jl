@@ -57,8 +57,8 @@ end
 
 
 
-function RW_learning(values, responses, α_vals,
-    correct_resp::Int, cr_switch::Int, max_trials;;Int, fuzziness::Float)
+function RW_learning(values::AbstractArray{<:Real}, responses::AbstractVector{<:Int},
+    α_vals::Dict, correct_resp::Int, cr_switch::Int, max_trials::Int, fuzziness::AbstractFloat)
 # Recursive reversal learning task takes in properties and produces a matrix of
 # values for each of the stimuli
 # Will call itself until the specified max number of trials are reached
@@ -74,13 +74,16 @@ function RW_learning(values, responses, α_vals,
 #   values: Matrix of the values for each stimuli
 
     # Get the most recent values for the stimuli and softmax them
-	V_curr = values[:,end]
+	V_curr = values[:, length(responses)]
 	V_soft = softmax(V_curr)
 	
     # Select a response and add that to the response vector
 	Q = select_response(V_soft)
-	push!(responses, Q)
+    push!(responses, Q)
 
+    # How many trials have been completed
+	N_trials = length(responses)
+	
     # Check whether that response is rewarded or not
 	Q_vec = check_answer(correct_resp, Q, length(V_curr), fuzziness)
 	
@@ -93,10 +96,7 @@ function RW_learning(values, responses, α_vals,
     # Generate the stimuli values for the current trial and add that to the
     # values matrix  
 	V_new = V_curr .+ (α .* δ)
-	append!(values, V_new)
-	
-    # How many trials have been completed
-	N_trials = length(responses)
+	values[N_trials,:] = V_new
 	
     # If we've reached a switch point then choose a new correct response
 	if N_trials % cr_switch == 0
