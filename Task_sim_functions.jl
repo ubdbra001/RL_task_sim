@@ -172,3 +172,39 @@ function RW_learning(values::AbstractArray{<:Real}, responses::AbstractVector{<:
 	end
 	
 end
+
+
+function RW_learning(current_vals::AbstractVector{<:AbstractFloat},
+    α_vals::Dict, correct_resp::Int, fuzziness::AbstractFloat)
+# Non-recursive Reversal learning task
+# Inputs:
+#	Current_vals: Vector of current stimulus values
+#	α_vals: Dict specifying reward values
+#	correct_resp: Integer specifying current correct response
+# 	fuzziness: Float specifying the trustworthiness of the feedback given
+# Outputs:
+#	V_new: Vector of reward values for each stimulus, updated based on feedback
+#		   to response
+#	response: Int specifying the most recent response 
+
+	# Softmax current reward values
+	V_soft = softmax(current_vals)
+	
+    # Select a response
+	Q = select_response(V_soft)
+    
+    # Check whether that response is rewarded or not
+	Q_vec = generate_feedback(Q, correct_resp, length(V_soft), fuzziness)
+	
+    # Calculate the delta
+	δ = (Q_vec - current_vals)
+
+    # Adjust the reward values according to the delta
+	α = dual_learning_rate(α_vals, δ)
+
+    # Generate the stimuli values for the current trial return these values and
+	# the response
+	V_new = current_vals .+ (α .* δ)
+	return(V_new, Q)
+
+end
