@@ -3,7 +3,7 @@ include("Task_sim_functions.jl")
 
 # Trial options
 N_options = 3;
-N_trials = 10000;
+N_trials = 1000;
 switch_after = 20;
 
 # Pre-alloacte value matrix
@@ -21,8 +21,6 @@ fuzziness = 0.8;
 # Run simulation using recursive function
 @time V_out = RW_learning(V, [0], α_vals, correct_resp, switch_after, N_trials, fuzziness)
 
-plot(V_out', label = nothing, ylims = [0,1], marker = :c, markersize = 1)
-
 # Run simulation using loop
 @time for run_n in 2:N_trials
 
@@ -37,3 +35,5 @@ plot(V_out', label = nothing, ylims = [0,1], marker = :c, markersize = 1)
     V[:, run_n] = new_vals;
 
 end
+
+plot(V_out', label = nothing, ylims = [0,1], marker = :c, markersize = 1)
